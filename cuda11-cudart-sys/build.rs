@@ -1,18 +1,15 @@
-
 fn main() {
     println!("cargo:include={}", "/usr/local/cuda/include");
     println!("cargo:rustc-link-search=native={}", "/usr/local/cuda/lib64");
     println!("cargo:rustc-link-lib=dylib={}", "cudart");
     println!("cargo:rerun-if-changed=build.rs");
-    
-    
 
-    #[cfg(feature="generate")]
+    #[cfg(feature = "generate")]
     {
         use std::path::PathBuf;
 
         println!("cargo:warning=Running bindgen(cuda11-cudart-sys), make sure to have all required host libs installed!");
-        
+
         let bindings = bindgen::Builder::default()
             .rust_target(bindgen::RustTarget::Stable_1_40)
             .raw_line(
@@ -30,20 +27,19 @@ fn main() {
             .clang_arg("/usr/local/cuda/include")
             .header("wrapper.h")
             .rustified_non_exhaustive_enum("cuda.*")
-            .whitelist_function("cu.*")
-            .whitelist_type("[Cc][Uu].*")
-            .default_alias_style(bindgen::AliasVariation::TypeAlias )
-            .default_enum_style(bindgen::EnumVariation::Rust{non_exhaustive: true})
+            .allowlist_function("cu.*")
+            .allowlist_type("[Cc][Uu].*")
+            .default_alias_style(bindgen::AliasVariation::TypeAlias)
+            .default_enum_style(bindgen::EnumVariation::Rust {
+                non_exhaustive: true,
+            })
             .generate()
             .expect("Unable to generate bindings");
 
         let out_path = PathBuf::from("src").join("cudart.rs");
-        
+
         bindings
             .write_to_file(out_path)
             .expect("Couldn't write bindings!");
     }
-
-
-    
 }
