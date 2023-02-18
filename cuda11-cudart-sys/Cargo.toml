@@ -16,7 +16,7 @@ libc = "0.2"
 
 
 [build-dependencies]
-bindgen = { version = "0.54", optional = true }
+bindgen = { version = "0.63", optional = true }
 
 [features]
 default = ["generate"]
